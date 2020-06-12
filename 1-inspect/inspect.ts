@@ -1,38 +1,34 @@
 /* npx ts-node inspect.ts*/
 
 interface Primitive {
-	[key: string]: boolean | number | string
+	varName: string,
+	varValue: boolean | number | string
 }
 
-const processPrimitive = (obj: Primitive): void => {
-	const varName = Object.keys(obj)[0];
-	const varValue = Object.values(obj)[0];
+const processPrimitive = ({ varName, varValue }: Primitive): void => {
 	console.log(`\n${"*".repeat(100)}`);
-	console.log(`variable "${varName}" is a primitive of type ${typeof varName}`);
+	console.log(
+		`variable "${varName}" is a primitive of type ${typeof varValue}`
+	);
 	console.log(varValue);
 };
 
 const inspect = (obj: object): void => {
-	Object.entries(obj).forEach(([key, value]) => {
-		if (Array.isArray(value)) {
+	console.log("\n\n\nSTART");
+	Object.entries(obj).forEach(([varName, varValue]) => {
+		if (Array.isArray(varValue)) {
 			console.log(`\n${"*".repeat(100)}`);
-			console.log(`variable "${key}" is an array`);
-			console.table(value);
-		} else if (typeof value === "object") {
+			console.log(`variable "${varName}" is an array`);
+			console.table(varValue);
+		} else if (typeof varValue === "object") {
 			console.log(`\n${"*".repeat(100)}`);
-			console.log(`variable "${key} is an object`);
-			console.table(value);
+			console.log(`variable "${varName} is an object`);
+			console.table(varValue);
 		} else {
-			// how can I send the varName and the varValue
-			const test = {
-				key: key,
-				value: value
-			};
-			console.log(test);
-			//processPrimitive({key, value});
+			processPrimitive({varName, varValue});
 		}
 	});
-	console.log("\nEND\n")
+	console.log("\nEND\n\n\n");
 };
 
 const progrLang = "JavaScript";
@@ -65,11 +61,13 @@ const futureTopics = {
 	}
 };
 
+/*
 console.log(Object.keys(futureTopics).length);
 
 Object.entries(futureTopics).forEach(([key, value]) => {
 	console.table(value);
 });
+*/
 
 inspect({
 	progrLang,
