@@ -1,8 +1,13 @@
-/* npx ts-node inspect.ts*/
+type TPrimitive = boolean | null | undefined | symbol | number | string
 
 interface Primitive {
 	varName: string,
-	varValue: boolean | number | string
+	varValue: TPrimitive
+}
+
+interface NonPrimitive {
+  varName: string,
+  varValue: Array<TPrimitive> | object
 }
 
 const processPrimitive = ({ varName, varValue }: Primitive): void => {
@@ -13,22 +18,27 @@ const processPrimitive = ({ varName, varValue }: Primitive): void => {
 	console.log(varValue);
 };
 
+const processNonPrimitive = (
+  { varName, varValue }: NonPrimitive,
+  type: string
+): void => {
+  console.log(`\n${"*".repeat(100)}`);
+  console.log(`variable "${varName}" is an ${type}`);
+  console.log(varValue);
+};
+
 const inspect = (obj: object): void => {
-	console.log("\n\n\nSTART");
+	console.log("\n".repeat(5));
 	Object.entries(obj).forEach(([varName, varValue]) => {
 		if (Array.isArray(varValue)) {
-			console.log(`\n${"*".repeat(100)}`);
-			console.log(`variable "${varName}" is an array`);
-			console.table(varValue);
+      processNonPrimitive({ varName, varValue }, "array");
 		} else if (typeof varValue === "object") {
-			console.log(`\n${"*".repeat(100)}`);
-			console.log(`variable "${varName} is an object`);
-			console.table(varValue);
+			processNonPrimitive({ varName, varValue }, "object");
 		} else {
-			processPrimitive({varName, varValue});
+			processPrimitive({ varName, varValue });
 		}
 	});
-	console.log("\nEND\n\n\n");
+	console.log("\n".repeat(5));
 };
 
 const progrLang = "JavaScript";
@@ -54,20 +64,13 @@ const currentTopics = {
 };
 
 const futureTopics = {
-	currentTopics,
-	futureTopics: {
-		mobile: "React-Native",
-		graphs: "WebGL, Threejs, BabylonJS, react-three-fiber"
-	}
+  mobile: "react-native",
+  graphics: ["WebGL", "Three.js", "react-three-fiber"],
+  ai: {
+    areas: ["image", "sound", "text"],
+    applications: ["chatbot", "recomendation", "facial recognition"]
+  }
 };
-
-/*
-console.log(Object.keys(futureTopics).length);
-
-Object.entries(futureTopics).forEach(([key, value]) => {
-	console.table(value);
-});
-*/
 
 inspect({
 	progrLang,
@@ -76,5 +79,7 @@ inspect({
 	yearsOfExperience,
 	isExpert,
 	sequence,
-	currentTopics
+	currentTopics,
+  futureTopics,
+  futureTopicsDotMobile: futureTopics.mobile
 });
