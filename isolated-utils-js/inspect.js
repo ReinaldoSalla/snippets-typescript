@@ -24,3 +24,5 @@ const inspect = (obj) => {
     });
     console.log("\n".repeat(5));
 };
+
+export default inspect;

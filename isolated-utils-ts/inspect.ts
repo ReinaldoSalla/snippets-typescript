@@ -40,3 +40,5 @@ const inspect = (obj: object): void => {
 	});
 	console.log("\n".repeat(5));
 };
+
+export default inspect;
