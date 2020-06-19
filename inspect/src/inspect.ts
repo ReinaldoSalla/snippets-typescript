@@ -1,3 +1,21 @@
+const convertVarNameDot = (varName: string) => {
+  let replaced = varName.replace("Dot", ".");
+  const indexToLowercasify = replaced.indexOf(".") + 1;
+  replaced = replaced.replace(
+    replaced.charAt(indexToLowercasify),
+    replaced.charAt(indexToLowercasify).toLowerCase()
+  );
+  return replaced;
+};
+
+const convertVarNameIndex = (varName: string) => {
+  for (let i = 0; i < 100; i++) {
+    if (varName.includes(`Index${i}`))
+      varName = varName.replace(`Index${i}`, `[${i}]`);
+  }
+  return varName;
+};
+
 type TPrimitive = boolean | null | undefined | symbol | number | string
 
 interface Primitive {
@@ -27,9 +45,17 @@ const processNonPrimitive = (
   console.log(varValue);
 };
 
-const inspect = (obj: object): void => {
+const inspect = (
+  obj: object, 
+  convertDot: boolean = true,
+  convertIndex: boolean = true
+): void => {
 	console.log("\n".repeat(5));
 	Object.entries(obj).forEach(([varName, varValue]) => {
+    if (varName.includes("Dot") && convertDot) 
+      varName = convertVarNameDot(varName);
+    if (varName.includes("Index") && convertIndex)
+      varName = convertVarNameIndex(varName);
 		if (Array.isArray(varValue)) {
       processNonPrimitive({ varName, varValue }, "array");
 		} else if (typeof varValue === "object") {
@@ -81,5 +107,6 @@ inspect({
 	sequence,
 	currentTopics,
   futureTopics,
-  futureTopicsDotMobile: futureTopics.mobile
+  futureTopicsDotMobile: futureTopics.mobile,
+  futureTopicsDotGraphicsIndex2: futureTopics.graphics[2]
 });
