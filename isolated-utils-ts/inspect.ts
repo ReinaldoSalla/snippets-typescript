@@ -66,3 +66,5 @@ const inspect = (
 	});
 	console.log("\n".repeat(5));
 };
+
+export default inspect;
