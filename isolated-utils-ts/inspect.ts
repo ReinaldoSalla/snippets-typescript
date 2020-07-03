@@ -1,3 +1,19 @@
+type TPrimitive = boolean | null | undefined | symbol | number | string
+
+interface Primitive {
+	varName: string,
+	varValue: TPrimitive
+}
+
+interface NonPrimitive {
+  varName: string,
+  varValue: Array<TPrimitive> | object
+}
+
+interface ArbitraryObject {
+  [key: string]: any
+}
+
 const convertVarNameDot = (varName: string) => {
   let replaced = varName.replace("Dot", ".");
   const indexToLowercasify = replaced.indexOf(".") + 1;
@@ -15,18 +31,6 @@ const convertVarNameIndex = (varName: string) => {
   }
   return varName;
 };
-
-type TPrimitive = boolean | null | undefined | symbol | number | string
-
-interface Primitive {
-	varName: string,
-	varValue: TPrimitive
-}
-
-interface NonPrimitive {
-  varName: string,
-  varValue: Array<TPrimitive> | object
-}
 
 const processPrimitive = ({ varName, varValue }: Primitive): void => {
 	console.log(`\n${"*".repeat(100)}`);
@@ -67,4 +71,24 @@ const inspect = (
 	console.log("\n".repeat(5));
 };
 
-export default inspect;
+const addZeros = (number: number): string => {
+  if (number < 10) return `00${number}`;
+  else if (number < 100) return `0${number}`;
+  else return `${number}`;
+}
+
+const inspectError = (err: ArbitraryObject): void => {
+  console.log('\n'.repeat(5));
+  console.error(`Error name: ${err.name}`);
+  console.error(`Error message: ${err.message}`);
+  console.error(`Stack trace:`);
+  const regex = /\(([^)]+)\)/g
+  const stacks = [...err.stack.matchAll(regex)];
+  const stackMsgs = stacks.map(item => item[0]);
+  stackMsgs.forEach((item, index) => 
+    console.error(`File n° ${addZeros(index + 1)}: ${item}`)
+  );
+  console.log('\n'.repeat(5));
+}
+
+export { inspect, inspectError };
