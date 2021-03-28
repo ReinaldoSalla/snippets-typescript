@@ -1,0 +1,247 @@
+// node-fetch-map-microsoft-google Promise.all
+import fetch from 'node-fetch';
+
+async function parseUrl(url: string) {
+  const response = await fetch(url);
+  const text = await response.text();
+  return text;
+}
+
+async function parseUrls(urls: string[]) {  
+  const promises = urls.map((url) => parseUrl(url));
+  const texts = await Promise.all(promises);
+  console.log(texts);
+}
+
+const urls = ['https://www.microsoft.com/', 'https://www.google.com/'];
+
+parseUrls(urls);
+
+
+
+
+
+
+
+
+
+
+
+
+
+// node-fetch-map-microsoft-google Promise.allSettled
+import fetch from 'node-fetch';
+
+async function parseUrl(url: string) {
+  const response = await fetch(url);
+  const text = await response.text();
+  return text.slice(0, 20);
+}
+
+async function parseUrls(urls: string[]) {
+  const promises = urls.map((url) => parseUrl(url));
+  const results = await Promise.allSettled(promises);
+  const fulfilleds = results.reduce((acc: string[], curr) => {
+    if (curr.status === 'fulfilled') {
+      acc.push(curr.value)
+    }
+    return acc;
+  }, []);
+  console.log(fulfilleds);
+}
+
+const urls = [
+  'https://www.microsoft.com/', 
+  'https://www.google.com/',
+  'https://error-example.com/'
+];
+
+parseUrls(urls);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// placeholder in async-await, () and await
+// async function waitAndReturn() {
+//   await new Promise((resolve) => setTimeout(resolve, 1000));
+//   return 'string returned by waitAndReturn()'
+// }
+
+// async function main() {
+//   const placeholder = waitAndReturn();
+//   console.log(placeholder);
+//   const result = await placeholder;
+//   console.log(result);
+// }
+
+// main();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// placeholder in async-await, it also works the other way around, with just function and await()
+async function waitAndReturn() {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  return 'string returned by waitAndReturn()'
+}
+
+async function main() {
+  const placeholder = waitAndReturn;
+  console.log(placeholder);
+  const result = await placeholder();
+  console.log(result);
+}
+
+main();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// composing promises,  with the allSettled example
+async function waitAndThrowError() {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  throw Error('string for throw error');
+}
+
+async function waitAndReturn() {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  return 'string for return';
+}
+
+async function main() {
+  console.time('time');
+  const promises = [waitAndThrowError(), waitAndReturn()];
+  // const results = await Promise.all(promises.map((promise: any) => {
+  //   return promise
+  //     .then((value: any) => ({ status: 'fulfilled', value: value }))
+  //     .catch((error: any) => ({ status: 'rejected', reason: error }));
+  // }));
+  const results = await Promise.all(promises.map(async (promise: any) => {
+    try {
+      const result = await promise;
+      return { status: 'fulfilled', value: result };
+    } catch (error) {
+      return { status: 'rejected', reason: error }
+    }
+  }));
+  // const results = await Promise.allSettled(promises);
+  console.log(results);
+  console.timeEnd('time'); 
+}
+
+main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// redundancy of async await
+
+async function getData() {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  console.log('timeout for getData finihed');
+  return { language: 'JavaScript', frontend: 'React', backend: 'Node' };
+}
+
+// async function layer2() {
+//   return getData();
+// }
+
+function layer2() {
+  return getData();
+}
+
+// async function layer2() {
+//   await getData();
+// }
+
+// function layer2() {
+//   getData();
+// }
+
+// the only one that does't work is the last one
+// assuming no return envolved, then await is necessary
+// becase yout don't want the function to return undefined before getData() has finished
+
+async function layer1() {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  console.log('timeout for layout1 finished');
+  return layer2();
+}
+
+async function main() {
+  const data = await layer1();
+  console.log(data);
+}
+
+main();
+
+
